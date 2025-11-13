@@ -1,3 +1,11 @@
+/**
+ * @deprecated This file contains legacy Next.js authentication utilities.
+ * For Express routes, use the middleware from src/middleware/auth.ts instead.
+ *
+ * This file is kept for backward compatibility with any remaining Next.js routes
+ * or shared code that might still reference it.
+ */
+
 import { auth } from "@clerk/nextjs/server";
 
 export interface AuthContext {
@@ -6,7 +14,8 @@ export interface AuthContext {
 }
 
 /**
- * Requires authentication for API routes
+ * @deprecated Use Express middleware from src/middleware/auth.ts instead
+ * Requires authentication for Next.js API routes
  * @throws {Error} If user is not authenticated
  */
 export async function requireAuth(): Promise<AuthContext> {
@@ -24,6 +33,7 @@ export async function requireAuth(): Promise<AuthContext> {
 }
 
 /**
+ * @deprecated Use Express middleware from src/middleware/auth.ts instead
  * Optional authentication - returns null if not authenticated
  */
 export async function optionalAuth(): Promise<AuthContext | null> {
