@@ -1,0 +1,261 @@
+// SmartBill Backend - Prisma Schema
+// PostgreSQL Database Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum OcrStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum IngestionSource {
+  MANUAL
+  GMAIL
+  IMAP
+  WHATSAPP
+  EMAIL
+}
+
+enum DocumentStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OcrProvider {
+  GOOGLE_VISION
+  AWS_TEXTRACT
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  EXPORT
+  OCR_PROCESS
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  clerkId      String   @unique
+  businessName String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  documents        Document[]
+  suppliers        Supplier[]
+  categories       Category[]
+  businessSettings BusinessSettings?
+  auditLogs        AuditLog[]
+
+  @@map("users")
+}
+
+model Document {
+  id         String  @id @default(uuid())
+  userId     String
+  supplierId String?
+  categoryId String?
+
+  // Document metadata
+  invoiceNumber String?
+  issueDate     DateTime
+  dueDate       DateTime?
+
+  // Financial data
+  totalAmount Decimal  @db.Decimal(10, 2)
+  vatAmount   Decimal? @db.Decimal(10, 2)
+  currency    String   @default("ILS")
+
+  // File storage
+  fileUrl  String
+  fileType String
+  fileName String
+  fileSize Int
+
+  // OCR & Processing
+  ocrStatus     OcrStatus @default(PENDING)
+  ocrData       Json?
+  ocrConfidence Float?
+
+  // Ingestion tracking
+  source         IngestionSource
+  sourceMetadata Json?
+
+  // Status & tags
+  status DocumentStatus @default(PENDING)
+  tags   String[]
+  notes  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  supplier  Supplier?  @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  category  Category?  @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  auditLogs AuditLog[]
+
+  @@index([userId])
+  @@index([supplierId])
+  @@index([categoryId])
+  @@index([issueDate])
+  @@index([status])
+  @@index([ocrStatus])
+  @@map("documents")
+}
+
+model Supplier {
+  id      String  @id @default(uuid())
+  userId  String
+  name    String
+  taxId   String?
+  email   String?
+  phone   String?
+  address String?
+
+  // Auto-detection fields
+  emailDomains String[]
+  keywords     String[]
+
+  // Stats
+  totalDocuments Int     @default(0)
+  totalAmount    Decimal @default(0) @db.Decimal(12, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@index([userId])
+  @@index([name])
+  @@map("suppliers")
+}
+
+model Category {
+  id     String  @id @default(uuid())
+  userId String
+  name   String
+  color  String?
+  icon   String?
+
+  // Auto-detection
+  keywords String[]
+
+  // Stats
+  totalDocuments Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@index([userId])
+  @@index([name])
+  @@map("categories")
+}
+
+model BusinessSettings {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  // Business info
+  businessName String?
+  taxId        String?
+  address      String?
+
+  // Gmail integration
+  gmailEnabled       Boolean   @default(false)
+  gmailAccessToken   String?
+  gmailRefreshToken  String?
+  gmailTokenExpiry   DateTime?
+  gmailSyncFrequency Int?
+  gmailLastSync      DateTime?
+
+  // IMAP integration
+  imapEnabled       Boolean   @default(false)
+  imapHost          String?
+  imapPort          Int?
+  imapUsername      String?
+  imapPassword      String?
+  imapSyncFrequency Int?
+  imapLastSync      DateTime?
+
+  // WhatsApp integration
+  whatsappEnabled       Boolean @default(false)
+  whatsappPhoneNumber   String?
+  whatsappWebhookSecret String?
+
+  // Inbound email
+  inboundEmailEnabled Boolean @default(false)
+  inboundEmailAddress String?
+
+  // OCR settings
+  ocrProvider    OcrProvider @default(GOOGLE_VISION)
+  ocrAutoProcess Boolean     @default(true)
+
+  // Export settings
+  defaultExportFormat String  @default("excel")
+  includeAttachments  Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("business_settings")
+}
+
+model AuditLog {
+  id         String  @id @default(uuid())
+  userId     String
+  documentId String?
+
+  action     AuditAction
+  entityType String
+  entityId   String?
+
+  changes  Json?
+  metadata Json?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  // Relations
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([documentId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

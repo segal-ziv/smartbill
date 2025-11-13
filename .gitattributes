@@ -1,0 +1,107 @@
+# ========================================
+# SmartBill - Git Attributes
+# ========================================
+# Ensures consistent line endings and proper handling of files across platforms
+
+# ----------------------------------------
+# Auto detect text files and normalize line endings
+# ----------------------------------------
+* text=auto
+
+# ----------------------------------------
+# Source Code
+# ----------------------------------------
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+
+# ----------------------------------------
+# Stylesheets
+# ----------------------------------------
+*.css text eol=lf
+*.scss text eol=lf
+*.sass text eol=lf
+*.less text eol=lf
+
+# ----------------------------------------
+# Documentation
+# ----------------------------------------
+*.md text eol=lf
+*.mdx text eol=lf
+*.txt text eol=lf
+
+# ----------------------------------------
+# Configuration Files
+# ----------------------------------------
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.env text eol=lf
+.editorconfig text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+
+# ----------------------------------------
+# Shell Scripts
+# ----------------------------------------
+*.sh text eol=lf
+*.bash text eol=lf
+
+# ----------------------------------------
+# Prisma Schema
+# ----------------------------------------
+*.prisma text eol=lf
+
+# ----------------------------------------
+# HTML & Templates
+# ----------------------------------------
+*.html text eol=lf
+*.htm text eol=lf
+*.xml text eol=lf
+*.svg text eol=lf
+
+# ----------------------------------------
+# Binary Files (treat as binary)
+# ----------------------------------------
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.mp4 binary
+*.mp3 binary
+*.wav binary
+
+# ----------------------------------------
+# Language Statistics (exclude from language detection)
+# ----------------------------------------
+# Exclude generated files from GitHub language statistics
+*.generated.* linguist-generated=true
+dist/** linguist-generated=true
+build/** linguist-generated=true
+coverage/** linguist-generated=true
+.next/** linguist-generated=true
+prisma/migrations/** linguist-vendored=true
+
+# ----------------------------------------
+# Diff Settings
+# ----------------------------------------
+# Better diff for package.json
+package.json text eol=lf diff=json
+package-lock.json text eol=lf diff=json
+pnpm-lock.yaml text eol=lf
+yarn.lock text eol=lf
