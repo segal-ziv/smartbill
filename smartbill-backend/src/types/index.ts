@@ -119,7 +119,7 @@ export interface ExportJobData {
   to: Date;
   supplierId?: string;
   categoryId?: string;
-  status?: string;
+  status?: "DRAFT" | "PENDING" | "APPROVED" | "REJECTED";
   format: "excel" | "zip";
 }
 

@@ -23,14 +23,14 @@ export async function processImapInbox(userId: string, settings: BusinessSetting
   return new Promise((resolve, reject) => {
     let processedCount = 0;
 
-    // Decrypt password
-    const password = decrypt(settings.imapPassword);
+    // Decrypt password (already validated above)
+    const password = decrypt(settings.imapPassword!);
 
-    // Create IMAP connection
+    // Create IMAP connection (all fields validated above)
     const imap = new Imap({
-      user: settings.imapUsername,
+      user: settings.imapUsername!,
       password,
-      host: settings.imapHost,
+      host: settings.imapHost!,
       port: settings.imapPort || 993,
       tls: true,
       tlsOptions: { rejectUnauthorized: false },
@@ -67,10 +67,10 @@ export async function processImapInbox(userId: string, settings: BusinessSetting
           fetch.on("message", (msg, seqno) => {
             msg.on("body", async (stream, info) => {
               try {
-                const parsed = await simpleParser(stream);
+                const parsed = await simpleParser(stream as any);
 
                 // Process attachments
-                if (parsed.attachments && parsed.attachments.length > 0) {
+                if (parsed.attachments && (parsed.attachments as any[]).length > 0) {
                   for (const attachment of parsed.attachments) {
                     const ext = attachment.filename?.split(".").pop()?.toLowerCase();
                     if (!ext || !["pdf", "jpg", "jpeg", "png"].includes(ext)) {
@@ -151,7 +151,7 @@ export async function processImapInbox(userId: string, settings: BusinessSetting
       });
     });
 
-    imap.once("error", (err) => {
+    imap.once("error", (err: Error) => {
       reject(err);
     });
 
