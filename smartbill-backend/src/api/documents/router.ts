@@ -49,7 +49,14 @@ router.get(
 
     const { page, limit, sortBy, sortOrder, ...filters } = parsed;
 
-    const result = await getDocuments(userId, filters, {
+    // Ensure from/to are Date objects (not strings)
+    const cleanFilters = {
+      ...filters,
+      from: filters.from instanceof Date ? filters.from : undefined,
+      to: filters.to instanceof Date ? filters.to : undefined,
+    };
+
+    const result = await getDocuments(userId, cleanFilters, {
       page,
       limit,
       sortBy,

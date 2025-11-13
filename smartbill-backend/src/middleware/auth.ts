@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { clerkMiddleware, requireAuth as clerkRequireAuth } from '@clerk/express';
+import { clerkMiddleware } from '@clerk/express';
 import { UnauthorizedError } from '../utils/errors';
 
 // Extend Express Request to include auth data
