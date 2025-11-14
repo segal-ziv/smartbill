@@ -13,7 +13,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:migrate:prod": "prisma migrate deploy",
+    "db:migrate:prod": "bash scripts/migrate-deploy.sh",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "worker:ocr": "tsx src/queues/workers/ocrWorker.ts",
