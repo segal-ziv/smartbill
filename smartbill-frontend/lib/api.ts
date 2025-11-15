@@ -70,25 +70,29 @@ class ApiClient {
   }
 
   // Auth
-  async getMe(): Promise<User> {
-    const { data } = await this.client.get<ApiResponse<User>>('/api/auth/me')
+  async getMe(signal?: AbortSignal): Promise<User> {
+    const { data } = await this.client.get<ApiResponse<User>>('/api/auth/me', {
+      signal,
+    })
     return data.data
   }
 
   // Documents
   async getDocuments(
-    params?: DocumentsQueryParams
+    params?: DocumentsQueryParams,
+    signal?: AbortSignal
   ): Promise<PaginatedResponse<Document>> {
     const { data } = await this.client.get<PaginatedResponse<Document>>(
       '/api/documents',
-      { params }
+      { params, signal }
     )
     return data
   }
 
-  async getDocument(id: string): Promise<Document> {
+  async getDocument(id: string, signal?: AbortSignal): Promise<Document> {
     const { data } = await this.client.get<ApiResponse<Document>>(
-      `/api/documents/${id}`
+      `/api/documents/${id}`,
+      { signal }
     )
     return data.data
   }
@@ -134,14 +138,17 @@ class ApiClient {
   }
 
   // Suppliers
-  async getSuppliers(): Promise<Supplier[]> {
-    const { data } = await this.client.get<ApiResponse<Supplier[]>>('/api/suppliers')
+  async getSuppliers(signal?: AbortSignal): Promise<Supplier[]> {
+    const { data } = await this.client.get<ApiResponse<Supplier[]>>('/api/suppliers', {
+      signal,
+    })
     return data.data
   }
 
-  async getSupplier(id: string): Promise<Supplier> {
+  async getSupplier(id: string, signal?: AbortSignal): Promise<Supplier> {
     const { data } = await this.client.get<ApiResponse<Supplier>>(
-      `/api/suppliers/${id}`
+      `/api/suppliers/${id}`,
+      { signal }
     )
     return data.data
   }
@@ -167,16 +174,18 @@ class ApiClient {
   }
 
   // Categories
-  async getCategories(): Promise<Category[]> {
+  async getCategories(signal?: AbortSignal): Promise<Category[]> {
     const { data } = await this.client.get<ApiResponse<Category[]>>(
-      '/api/categories'
+      '/api/categories',
+      { signal }
     )
     return data.data
   }
 
-  async getCategory(id: string): Promise<Category> {
+  async getCategory(id: string, signal?: AbortSignal): Promise<Category> {
     const { data } = await this.client.get<ApiResponse<Category>>(
-      `/api/categories/${id}`
+      `/api/categories/${id}`,
+      { signal }
     )
     return data.data
   }
@@ -202,9 +211,10 @@ class ApiClient {
   }
 
   // Settings
-  async getSettings(): Promise<BusinessSettings> {
+  async getSettings(signal?: AbortSignal): Promise<BusinessSettings> {
     const { data } = await this.client.get<ApiResponse<BusinessSettings>>(
-      '/api/settings'
+      '/api/settings',
+      { signal }
     )
     return data.data
   }
