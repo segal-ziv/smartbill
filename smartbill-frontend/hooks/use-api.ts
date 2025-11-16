@@ -31,7 +31,7 @@ export function useDocuments(params?: DocumentsQueryParams) {
   useApiAuth()
   return useQuery({
     queryKey: ['documents', params],
-    queryFn: () => apiClient.getDocuments(params),
+    queryFn: ({ signal }) => apiClient.getDocuments(params, signal),
   })
 }
 
@@ -39,7 +39,7 @@ export function useDocument(id: string) {
   useApiAuth()
   return useQuery({
     queryKey: ['documents', id],
-    queryFn: () => apiClient.getDocument(id),
+    queryFn: ({ signal }) => apiClient.getDocument(id, signal),
     enabled: !!id,
   })
 }
@@ -93,7 +93,7 @@ export function useSuppliers() {
   useApiAuth()
   return useQuery({
     queryKey: ['suppliers'],
-    queryFn: () => apiClient.getSuppliers(),
+    queryFn: ({ signal }) => apiClient.getSuppliers(signal),
   })
 }
 
@@ -101,7 +101,7 @@ export function useSupplier(id: string) {
   useApiAuth()
   return useQuery({
     queryKey: ['suppliers', id],
-    queryFn: () => apiClient.getSupplier(id),
+    queryFn: ({ signal }) => apiClient.getSupplier(id, signal),
     enabled: !!id,
   })
 }
@@ -155,7 +155,7 @@ export function useCategories() {
   useApiAuth()
   return useQuery({
     queryKey: ['categories'],
-    queryFn: () => apiClient.getCategories(),
+    queryFn: ({ signal }) => apiClient.getCategories(signal),
   })
 }
 
@@ -163,7 +163,7 @@ export function useCategory(id: string) {
   useApiAuth()
   return useQuery({
     queryKey: ['categories', id],
-    queryFn: () => apiClient.getCategory(id),
+    queryFn: ({ signal }) => apiClient.getCategory(id, signal),
     enabled: !!id,
   })
 }
@@ -217,7 +217,7 @@ export function useSettings() {
   useApiAuth()
   return useQuery({
     queryKey: ['settings'],
-    queryFn: () => apiClient.getSettings(),
+    queryFn: ({ signal }) => apiClient.getSettings(signal),
   })
 }
 
@@ -255,6 +255,6 @@ export function useMe() {
   useApiAuth()
   return useQuery({
     queryKey: ['me'],
-    queryFn: () => apiClient.getMe(),
+    queryFn: ({ signal }) => apiClient.getMe(signal),
   })
 }

@@ -1,25 +1,41 @@
 "use client"
 
+import { useMemo } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { FileText, Plus } from "lucide-react"
 import { Header } from "@/components/header"
 import { DocumentsTable } from "@/components/documents-table"
 import { EmptyState } from "@/components/empty-state"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useDocuments } from "@/hooks/use-api"
-import { FileText, Plus } from "lucide-react"
-import Link from "next/link"
 
 export default function DashboardPage() {
   const { data, isLoading, error } = useDocuments({ page: 1, limit: 50 })
+  const router = useRouter()
 
   const documents = data?.data || []
   const hasDocuments = documents.length > 0
 
-  // Calculate stats
-  const totalDocuments = documents.length
-  const pendingDocuments = documents.filter((d) => d.status === "PENDING").length
-  const approvedDocuments = documents.filter((d) => d.status === "APPROVED").length
-  const totalAmount = documents.reduce((sum, d) => sum + parseFloat(d.totalAmount), 0)
+  const { totalDocuments, pendingDocuments, approvedDocuments, totalAmount } = useMemo(() => {
+    let pending = 0
+    let approved = 0
+    let amount = 0
+
+    for (const doc of documents) {
+      if (doc.status === "PENDING") pending += 1
+      if (doc.status === "APPROVED") approved += 1
+      amount += parseFloat(doc.totalAmount)
+    }
+
+    return {
+      totalDocuments: documents.length,
+      pendingDocuments: pending,
+      approvedDocuments: approved,
+      totalAmount: amount,
+    }
+  }, [documents])
 
   if (isLoading) {
     return (
@@ -77,31 +93,31 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {hasDocuments ? (
-          <>
-            {/* Action Bar */}
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-foreground">החשבוניות שלי</h3>
-              <Link href="/upload">
-                <Button>
-                  <Plus className="w-4 h-4 ml-2" />
-                  העלה מסמך
-                </Button>
-              </Link>
-            </div>
+          {hasDocuments ? (
+            <>
+              {/* Action Bar */}
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-foreground">החשבוניות שלי</h3>
+                <Link href="/upload">
+                  <Button>
+                    <Plus className="w-4 h-4 ml-2" />
+                    העלה מסמך
+                  </Button>
+                </Link>
+              </div>
 
-            {/* Documents Table */}
-            <DocumentsTable documents={documents} />
-          </>
-        ) : (
-          <EmptyState
-            icon={FileText}
-            title="אין עדיין חשבוניות במערכת"
-            description="התחל להעלות חשבוניות כדי לעקוב אחר ההוצאות שלך"
-            actionLabel="העלה מסמך"
-            onAction={() => (window.location.href = "/upload")}
-          />
-        )}
+              {/* Documents Table */}
+              <DocumentsTable documents={documents} />
+            </>
+          ) : (
+            <EmptyState
+              icon={FileText}
+              title="אין עדיין חשבוניות במערכת"
+              description="התחל להעלות חשבוניות כדי לעקוב אחר ההוצאות שלך"
+              actionLabel="העלה מסמך"
+              onAction={() => router.push("/upload")}
+            />
+          )}
       </div>
     </div>
   )

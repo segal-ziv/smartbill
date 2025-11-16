@@ -1,5 +1,4 @@
-"use client"
-
+import { memo } from "react"
 import Link from "next/link"
 import type { Document } from "@/lib/api-types"
 import { Button } from "@/components/ui/button"
@@ -39,7 +38,14 @@ const ocrStatusLabels = {
   FAILED: "נכשל",
 }
 
-export function DocumentsTable({ documents }: DocumentsTableProps) {
+const dateFormatter = new Intl.DateTimeFormat("he-IL")
+const currencyFormatter = new Intl.NumberFormat("he-IL", {
+  style: "currency",
+  currency: "ILS",
+  minimumFractionDigits: 2,
+})
+
+function DocumentsTableComponent({ documents }: DocumentsTableProps) {
   return (
     <div className="border border-border rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -61,12 +67,12 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
                 <td className="px-6 py-4 text-sm font-medium text-foreground">
                   {doc.supplier?.name || "לא משויך"}
                 </td>
-                <td className="px-6 py-4 text-sm text-muted-foreground">
-                  {new Date(doc.issueDate).toLocaleDateString("he-IL")}
-                </td>
-                <td className="px-6 py-4 text-sm font-semibold text-foreground">
-                  ₪{parseFloat(doc.totalAmount).toFixed(2)}
-                </td>
+                  <td className="px-6 py-4 text-sm text-muted-foreground">
+                    {dateFormatter.format(new Date(doc.issueDate))}
+                  </td>
+                  <td className="px-6 py-4 text-sm font-semibold text-foreground">
+                    {currencyFormatter.format(Number(doc.totalAmount))}
+                  </td>
                 <td className="px-6 py-4 text-sm text-muted-foreground">
                   {doc.category?.name || "לא משויך"}
                 </td>
@@ -96,3 +102,6 @@ export function DocumentsTable({ documents }: DocumentsTableProps) {
     </div>
   )
 }
+
+export const DocumentsTable = memo(DocumentsTableComponent)
+DocumentsTable.displayName = "DocumentsTable"
